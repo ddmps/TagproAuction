@@ -2,39 +2,48 @@
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1">
             <div class="panel panel-default">
-                <div id="player-info" class="panel-heading" style="text-align:center">
-                    {{#if isNominationTime}}
-                    <h2 class="panel-title">Awaiting nomination from {{currentNominatingPlayer}} - <b id="elapsedTime">0</b><br /></h2>
-                    <script>
-                        startTimer();
-                        hidePlayerInfo();
-                    </script>
-                    {{else}}
-                    <h2 class="panel-title" onclick="showPlayerInfo()">
-                        {{#if personBeingBidOn}}
-                        {{personBeingBidOn}} - <b id="timeRemaining">{{time}}</b><br />
-                        <small>Click to show/hide info</small>
-                        {{/if}}
-                    </h2>
-                    {{> renderplayermodal currentPlayerInfo}}
-
-                    <script>
-                        playSounds("go");
-                    </script>
-                    {{/if}}
-                </div>
-                {{#if isNominationTime}}
-                <div class="panel-body" style="text-align:center">
-                    <h4 class="panel-title">{{nextNominator}} is next | {{getsnarkymessage}} {{currentNominatingPlayer}}</h4>
-                </div>
+                {{#if isPickTime}}
+                    <div id="player-info" class="panel-heading" style="text-align:center">
+                        <h2 class="panel-title"> Awaiting selection from {{currentNominatingPlayer}}<br /></h2>
+                    </div>
+                    <div class="panel-body" style="text-align:center">
+                        <h4 class="panel-title">{{nextSnakeNominator}} is next | {{getsnarkymessage}} {{currentNominatingPlayer}}</h4>
+                    </div>
                 {{else}}
-                <div class="panel-body" style="text-align:center">
-                    {{#if auctionPaused}}
-                    <h4 class="panel-title">{{auctionMessage}}</h4>
+                    <div id="player-info" class="panel-heading" style="text-align:center">
+                        {{#if isNominationTime}}
+                            <h2 class="panel-title">Awaiting nomination from {{currentNominatingPlayer}}<br /></h2>
+                            <script>
+                                startTimer();
+                                hidePlayerInfo();
+                            </script>
+                            {{else}}
+                            <h2 class="panel-title" onclick="showPlayerInfo()">
+                                {{#if personBeingBidOn}}
+                                    {{personBeingBidOn}} - <b id="timeRemaining">{{time}}</b><br />
+                                    <small>Click to show/hide info</small>
+                                {{/if}}
+                            </h2>
+                            {{> renderplayermodal currentPlayerInfo}}
+
+                            <script>
+                                playSounds("go");
+                            </script>
+                        {{/if}}
+                    </div>
+                    {{#if isNominationTime}}
+                        <div class="panel-body" style="text-align:center">
+                            <h4 class="panel-title">{{nextNominator}} is next | {{getsnarkymessage}} {{currentNominatingPlayer}}</h4>
+                        </div>
                     {{else}}
-                    <h4 class="panel-title">{{lastBidder}} bid {{bidAmount}}</h4>
+                        <div class="panel-body" style="text-align:center">
+                            {{#if auctionPaused}}
+                                <h4 class="panel-title">{{auctionMessage}}</h4>
+                            {{else}}
+                                <h4 class="panel-title">{{lastBidder}} bid {{bidAmount}}</h4>
+                            {{/if}}
+                        </div>
                     {{/if}}
-                </div>
                 {{/if}}
             </div>
         </div>

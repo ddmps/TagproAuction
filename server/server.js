@@ -19,6 +19,7 @@ BoardHelpers = new Mongo.Collection("boardhelpers");
 Administrators = new Mongo.Collection("admins");
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
 PendingTrades = new Mongo.Collection("trades");
+SnakeOrder = new Mongo.Collection("snakeorder");
 
 Meteor.methods({
     isKeeper: function(bidder, player) {
@@ -73,6 +74,16 @@ Meteor.methods({
         AuctionData.insert({State: "Nominating", nextExpiryDate: new Date().getTime()+bidTime, Nominator: nominator.name,  startTime:new Date().getTime()});
         AuctionStatus.update({}, {"status":"Live"});
     },
+    startSnakeDraft: function(person) {
+        var bidTime = 25000;
+        console.log("Starting snake draft");
+        Meteor.call("insertMessage", "Draft started by "+person, new Date(), "started");
+        nominator = Meteor.call('pickSnakePicker');
+        console.log("nominator is: " + nominator);
+        AuctionData.remove({});
+        AuctionData.insert({State: "Snake", Nominator: nominator});
+        AuctionStatus.update({}, {"status":"Live"});
+    },
     removeMessage : function(messageid) {
         Messages.remove(messageid);
     },
@@ -96,6 +107,36 @@ Meteor.methods({
     getServerTime: function () {
         var _time = (new Date).getTime();
         return _time;
+    },
+    pickSnakePicker : function () {
+        console.log("pickSnakePicker: started");
+        var nextPickOrder = SnakeOrder.findOne({"name":"nextInOrder"});
+        console.log(nextPickOrder);
+        var nextOrder = nextPickOrder.nextorder;
+        var round = Math.ceil(nextOrder/20);
+        var order = nextOrder - (20 * (round - 1));
+        console.log("round: " + round + " order: " + order);
+        var captain = SnakeOrder.findOne({"order":order,"round":round});
+        console.log(captain);
+        if(nextOrder == 141) {
+            Meteor.call("insertMessage", "Draft over!", new Date(), "winningBid");
+            AuctionData.remove({});
+            return null;
+        }
+        SnakeOrder.update({"name":"nextInOrder"}, {$set: {"nextorder":nextOrder + 1}});
+        if(captain.picking) {
+            console.log("pickSnakePicker: captain is picking");
+            console.log(captain.name);
+            return captain.name;
+        }
+        else {
+            console.log("pickSnakePicker: " + captain.name + " isn't picking anymore!");
+            return Meteor.call("pickSnakePicker");
+        }
+    },
+    finishPicking:function(captain) {
+        Meteor.call("insertMessage",captain + " has elected to stop picking", new Date(), "winningBid")
+        SnakeOrder.update({"name":captain,"playername":""},{$set:{"picking":false}},{multi:true});
     },
     pickNominator : function() {
         console.log("pickNominator: started");
@@ -259,6 +300,7 @@ Meteor.methods({
 
             BidHistory.insert({bidder: state.Nominator, amount: bid, player: playerNominated, createdAt: new Date().getTime(), secondsLeft:bidTime});
 
+            //TODO: I think this is causing the weird bugs. We wanna put a temp value into a temp db then copy it over, and do checks on both.
             AuctionData.remove({});
 
             if(bidTimeout) {
@@ -270,9 +312,39 @@ Meteor.methods({
 
             return AuctionData.insert({State: "Bidding", nextExpiryDate: new Date().getTime()+bidTime, currentBid: bid, currentPlayer: playerNominated, lastBidder: state.Nominator, Nominator:state.Nominator});
         }
+        else if(state !== undefined && state.State == "Snake") {
+            //handle snake draft toggle
+            if(PlayerResponse.find({playername:playerNominated}).count() == 0) {
+                console.log("Player not signed up!");
+                return false;
+            }
+
+            if(TeamData.find({name:playerNominated}).count() > 0) {
+                console.log("Can't select someone on a team!");
+                return false;
+            }
+            var nextPickOrder = SnakeOrder.findOne({"name":"nextInOrder"});
+            var curPick = nextPickOrder.nextorder - 1;
+            var round = Math.ceil(curPick/20);
+            var order = curPick - (20 * (round - 1));
+            currentCaptain = AuctionData.findOne({});
+            console.log(round + " " + order);
+            SnakeOrder.update({"round":round,"order":order}, {$set: {"playername":playerNominated}});
+            var selectingTeam = TeamNames.findOne({"captain":currentCaptain.Nominator});
+            var thisPlayerOrder = selectingTeam.numrosterspots + 1;
+            TeamData.insert({"name" : playerNominated, "order" : thisPlayerOrder, "cost": 0, "division": selectingTeam.division, "teamname" : selectingTeam.teamname});
+            TeamNames.update({"teamname":selectingTeam.teamname}, {$set: {"numrosterspots":thisPlayerOrder}});
+            Meteor.call("insertMessage", currentCaptain.Nominator + " selects " + playerNominated + " with pick " + curPick,new Date() + " of the snake draft", "winningBid");
+            nextNominator = Meteor.call("pickSnakePicker");
+            if(nextNominator) {
+                AuctionData.remove({});
+                AuctionData.insert({State: "Snake", Nominator: nextNominator});
+            }
+        }
         else if (state !== undefined)
         {
             lastNominator = AuctionData.findOne({}).Nominator;
+            // TODO: investigate if this is causing the issue w/ auto-awarded players
             AuctionData.remove({});
 
             console.log("Not nominating... someone won!");
@@ -390,8 +462,18 @@ Meteor.startup(function () {
     var additionTime = 15000;
     var lock = 0;
     var renewData = false;
-
     var renew2 = false;
+    var renew3 = false;
+
+    if(renew3) {
+        SnakeOrder.remove({});
+        var initialSnakeData = {};
+        initialSnakeData = JSON.parse(Assets.getText('snakeorder.json'));
+        for(i = 0; i < initialSnakeData.length; i++) {
+            var obj = initialSnakeData[i];
+            SnakeOrder.insert(obj);
+        }
+    }
     if(renew2) {
         AuctionData.remove({});
         AuctionStatus.remove({})
@@ -490,5 +572,6 @@ Meteor.startup(function () {
     Meteor.publish("boardhelpers", function() {return BoardHelpers.find()});
     Meteor.publish("admins", function() {return Administrators.find()});
     Meteor.publish("trades", function() {return PendingTrades.find()});
+    Meteor.publish("snakeorder", function() {return SnakeOrder.find()});
     return true;
 });
