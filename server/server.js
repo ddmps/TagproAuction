@@ -1,35 +1,31 @@
+var nconf = Npm.require('nconf');
+nconf.file('/eltp.eu/config.json');
+var conString = "postgres://"+nconf.get("database:username")+":"+nconf.get("database:password")+"@"+nconf.get("database:host")+"/"+nconf.get("database:database");
 WarningMessage = new Mongo.Collection("warningmessage");
 AuctionData = new Mongo.Collection("auctiondata");
 PausedAuction = new Mongo.Collection("pauseddata");
-TeamData = new Mongo.Collection('teams');
-TeamNames = new Mongo.Collection('teamnames');
-Divisions = new Mongo.Collection('divisions');
-DraftablePlayers = new Mongo.Collection('players');
+teams = new SQL.Collection('team', conString);
+playerTeam = new SQL.Collection('team_player_xref', conString);
+//Divisions = new Mongo.Collection('divisions');
+DraftablePlayers = new SQL.Collection('player', conString);
 Messages = new Mongo.Collection('messages');
 BidHistory = new Mongo.Collection('bids');
 Nominators = new Mongo.Collection('nominators');
-Keepers = new Mongo.Collection('keepers');
+//Keepers = new Mongo.Collection('keepers');
 NextNominator = new Mongo.Collection('nextnominator');
 CurrentPick = new Mongo.Collection('currentpick');
 AuctionStatus = new Mongo.Collection("auctionstatus");
 AuctionLock = new Mongo.Collection("auctionlock");
 PreviousAuctionData = new Mongo.Collection("previousauctiondata");
-PlayerResponse = new Mongo.Collection("playerResponse");
-BoardHelpers = new Mongo.Collection("boardhelpers");
-Administrators = new Mongo.Collection("admins");
+PlayerResponse = new SQL.Collection("player", conString);
+BoardHelpers = new SQL.Collection("user_google", conString);
+Administrators = new SQL.Collection("user_google", conString);
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
-PendingTrades = new Mongo.Collection("trades");
+//PendingTrades = new Mongo.Collection("trades");
 
 Meteor.methods({
-    isKeeper: function(bidder, player) {
-        keepers = Keepers.findOne({"captain":bidder}).keepers;
-        if(keepers.indexOf(player) >= 0) {
-            return true;
-        }
-        return false;
-    },
     undoNomination : function(person) {
-        var bidTime = 25000;
+        var bidTime = 25000; //25 secs first -> then 10 secs for each new bid
         ad = AuctionData.findOne({});
         if(ad.Nominator !== undefined) {
             nominator = ad.Nominator;
@@ -76,7 +72,7 @@ Meteor.methods({
     removeMessage : function(messageid) {
         Messages.remove(messageid);
     },
-    updatePacketValue : function(message, ranking, username) {
+    /*updatePacketValue : function(message, ranking, username) {
         console.log(message);
         PlayerResponse.update({meteorUserId: username}, {$set: {ranking: parseInt(ranking)}});
     },
@@ -88,7 +84,7 @@ Meteor.methods({
         PlayerResponse.remove({"meteorUserId" : dataToSend.meteorUserId});
         PlayerResponse.insert(dataToSend);
         console.log("edited signup from: " + dataToSend.meteorUserId);
-    },
+    },*/
     getSignedUp : function(playername) {
         var num = PlayerResponse.find({meteorUserId:playername}).count();
         return num;
@@ -279,18 +275,14 @@ Meteor.methods({
             var team = TeamNames.findOne({"captain" : state.lastBidder});
             var playerWon = state.currentPlayer;
 
-            // ALL CAPS-specific thing here
-            if(state.lastBidder == "BALLDON'TLIE") {
-                playerWon = playerWon.toUpperCase();
-            }
-
             // handle keepers
-            keepers = Keepers.findOne({"captain":state.lastBidder}).keepers;
+            /*keepers = Keepers.findOne({"captain":state.lastBidder}).keepers;
             var oldKeeperMoney = team.keepermoney;
             var keepermoney = team.keepermoney;
             var oldMoney = team.money;
             var money = team.money;
             money = money - state.currentBid;
+            
 
             if(keepers.indexOf(playerWon) >= 0) {
                 console.log(playerWon, " is a keeper!");
@@ -307,7 +299,7 @@ Meteor.methods({
             }
 
             var ActualCost = oldMoney - money;
-
+            */
             var playerOrder = parseInt(team.count) + 1;
             // Put him in the roster
             TeamData.update({"teamname": team.teamname, "order" : playerOrder}, {$set: {"name": playerWon, "cost": state.currentBid}});
@@ -387,7 +379,7 @@ Meteor.startup(function () {
     console.log("Loading it up");
     // Clear state
     var bidTime = 25000;
-    var additionTime = 15000;
+    var additionTime = 10000;
     var lock = 0;
     var renewData = false;
 
@@ -475,8 +467,13 @@ Meteor.startup(function () {
     }
 
     Meteor.publish("divisions", function() {return Divisions.find({})});
-    Meteor.publish("teams", function() {return TeamData.find();});
-    Meteor.publish("teamnames", function() {return TeamNames.find()});
+    Meteor.publish("teams", function() {return playerTeam.select('player.name as name, team_player_xref.order as order. team_player_xref.captain as captain, team_player_xref.co_captain as cocaptain, team_player_xref.cost as cost, "ELTP" as division, team.name as teamname')
+        .join(['inner join', 'inner join'], ['team_id', 'player_id'], [['team'], ['team_id'], ['player'], ['player_id']]);});
+    Meteor.publish("teamnames", function() {return teams.select('team.team_id as teamid, 
+        (SELECT team.teamname as teamnames FROM
+        ) team.name as teamname, 100-SUM(team_player_xref.cost) as money')
+        .join(['inner join'], ['team_id'], [['team_player_xref'], ['team_name']])
+        .group('team.team_id')};
     Meteor.publish("messages", function() {return Messages.find({}, {sort: {createdAt: -1}, limit:25});});
     Meteor.publish("auctiondata", function() {return AuctionData.find()});
     Meteor.publish("auctionstatus", function() {return AuctionStatus.find()});
@@ -489,6 +486,6 @@ Meteor.startup(function () {
     Meteor.publish("warningMessage", function() {return WarningMessage.find()});
     Meteor.publish("boardhelpers", function() {return BoardHelpers.find()});
     Meteor.publish("admins", function() {return Administrators.find()});
-    Meteor.publish("trades", function() {return PendingTrades.find()});
+    //Meteor.publish("trades", function() {return PendingTrades.find()});
     return true;
 });
