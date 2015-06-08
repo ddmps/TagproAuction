@@ -97,7 +97,7 @@ Meteor.methods({
         console.log("edited signup from: " + dataToSend.meteorUserId);
     },*/
     getSignedUp : function(playername) {
-        var num = PlayerResponse.find({meteorUserId:playername}).count();
+        var num = PlayerResponse.select('COUNT(*)').fetch();
         return num;
     },
     getServerTime: function () {
@@ -107,14 +107,13 @@ Meteor.methods({
     pickSnakePicker : function () {
         console.log("pickSnakePicker: started");
         var nextPickOrder = SnakeOrder.findOne({"name":"nextInOrder"});
-        console.log(nextPickOrder);
         var nextOrder = nextPickOrder.nextorder;
-        var round = Math.ceil(nextOrder/20);
-        var order = nextOrder - (20 * (round - 1));
+        var round = Math.ceil(nextOrder/10);
+        var order = nextOrder - (10 * (round - 1));
         console.log("round: " + round + " order: " + order);
-        var captain = SnakeOrder.findOne({"order":order,"round":round});
+        var captain = team_player_xref.select('team_id, SUM(cost) as cost_sum').group('team_id').findOne({"order":order,"round":round});
         console.log(captain);
-        if(nextOrder == 141) {
+        if(team_player_xref.select('COUNT(*)').fetch() == getSignedUp()) {
             Meteor.call("insertMessage", "Draft over!", new Date(), "winningBid");
             AuctionData.remove({});
             return null;
@@ -150,7 +149,7 @@ Meteor.methods({
         }
 
         nextNominator = Nominators.findOne({"order":newnextorder});
-        var numplayers = TeamData.find({name:{$ne:""}}).count() - 19;
+        var numplayers = TeamData.find({name:{$ne:""}}).count() - 9;
         var text = "Waiting for "+captain.name +" to nominate pick "+numplayers+" of the draft.";
         Meteor.call("insertMessage", text, new Date());
         var text = nextNominator.name +" is nominating after "+ captain.name;
