@@ -4,7 +4,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading form-inline">
                     {{#if isCaptain}}
-                        <p class="pull-right">Balance: <b>{{getBalance}} ({{getKeepermoney}})</b></p>
+                        {{#if isSnakeDraft}}
+                            <p class="pull-right">Remaining Picks: <b>{{numberRemainingPicks}}</b></p>
+                        {{else}}
+                            <p class="pull-right">Balance: <b>{{getBalance}} ({{getKeepermoney}})</b></p>
+                        {{/if}}
                     {{/if}}
                 </div>
             </div>

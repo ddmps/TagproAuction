@@ -3,6 +3,12 @@ Template.display_bidding_options.helpers({
     console.log(PlayerResponse.find({}, {fields:{tagpro:1}}));
     return PlayerResponse.find({}, {fields:{tagpro:1}});
   },
+  isSnakeDraft:function() {
+      return AuctionData.findOne({}).State == "Snake";
+  },
+  isPicking:function() {
+    return AuctionData.findOne({"Nominator":Meteor.user().username});
+  },
   isCaptain: function() {
     if(!Meteor.user())
       return false;
@@ -10,6 +16,9 @@ Template.display_bidding_options.helpers({
         return true;
     }
     return false;
+  },
+  canStopPicking:function() {
+      return (TeamNames.findOne({"captain":Meteor.user().username}).numrosterspots >= 8);
   },
   isNominationTime: function() {
     if(AuctionData.findOne({}) !== undefined)
@@ -89,30 +98,40 @@ Template.display_bidding_options.events(
   {
     'submit .bid-on-player' : function(event)
     {
-      var bid = parseInt(event.target.amount.value);
-      if(bid >= 0) {
-        Meteor.call("acceptBid", Meteor.user().username, bid, new Date().getTime());
-      }
-      Session.set("playSound", "bid")
-      return false;
+        var bid = parseInt(event.target.amount.value);
+        if(bid >= 0) {
+          Meteor.call("acceptBid", Meteor.user().username, bid, new Date().getTime());
+        }
+        Session.set("playSound", "bid")
+        return false;
     },
     'submit .nominate-player' : function(event)
     {
-      var player = event.target.player.value;
-      var bid = parseInt(event.target.amount.value);
-      if(!bid || bid < 0) {
-        bid = 0;
-      }
-      Meteor.call("toggleState", player, bid);
-      return false;
+        var player = event.target.player.value;
+        var bid = parseInt(event.target.amount.value);
+        if(!bid || bid < 0) {
+          bid = 0;
+        }
+        Meteor.call("toggleState", player, bid);
+        return false;
     },
     'click .bid-button' : function(event) {
-      var bid = parseInt(event.currentTarget.getAttribute('amount'));
-      if(bid >= 0) {
-        Meteor.call("acceptBid", Meteor.user().username, bid, new Date().getTime());
-      }
-      Session.set("playSound", "bid")
-      return false;
+        var bid = parseInt(event.currentTarget.getAttribute('amount'));
+        if(bid >= 0) {
+          Meteor.call("acceptBid", Meteor.user().username, bid, new Date().getTime());
+        }
+        Session.set("playSound", "bid")
+        return false;
+    },
+    'submit .select-player' : function(event)
+    {
+        var player = event.target.player.value;
+        Meteor.call("toggleState", player, 0);
+        return false;
+    },
+    'submit .stop-selecting' : function(event) {
+        Meteor.call("finishPicking",Meteor.user().username);
+        return false;
     }
   }
 );

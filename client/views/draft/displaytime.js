@@ -76,13 +76,13 @@ Template.display_time.helpers(
     },
     auctionMessage: function()
     {
-      if(AuctionStatus.findOne({}) !== undefined) {
-        status = AuctionStatus.findOne({}).status;
-        if(status == "Paused")
-          return "Auction is paused"
-          else
-            return "Auction has not started"
-            }
+        if(AuctionStatus.findOne({}) !== undefined) {
+            status = AuctionStatus.findOne({}).status;
+            if(status == "Paused")
+                return "Auction is paused"
+            else
+                return "Auction has not started"
+        }
     },
     getsnarkymessage: function()
     {
@@ -96,5 +96,37 @@ Template.display_time.helpers(
       var nextNominator = Nominators.findOne({"order":nextorder}).name;
       //console.log
       return nextNominator;
+    },
+    nextSnakeNominator: function() {
+        console.log("test");
+        var nextPickOrder = SnakeOrder.findOne({"name":"nextInOrder"});
+        console.log(nextPickOrder);
+        nextordernumber = nextPickOrder.nextorder;
+        console.log("test2");
+        round = Math.ceil(nextordernumber/20);
+        order = nextordernumber - ((round - 1)*20);
+        var nextNominator = SnakeOrder.findOne({"order":order,"round":round});
+        if(nextordernumber > 140) {
+            return "Nobody";
+        }
+        else {
+            while(!nextNominator.picking) {
+                nextordernumber += 1;
+                if(nextordernumber == 141) {
+                    return "Nobody";
+                }
+                round = Math.ceil(nextordernumber/20);
+                order = nextordernumber - ((round - 1)*20);
+                nextNominator = SnakeOrder.findOne({"order":order,"round":round});
+            }
+            return nextNominator.name;
+        }
+    },
+    isPickTime : function() {
+      state = AuctionData.findOne({});
+      if(state.State == "Snake") {
+          return true;
+      }
+      return false;
     }
   });

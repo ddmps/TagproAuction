@@ -18,6 +18,7 @@ PlayerResponse = new Mongo.Collection("playerResponse");
 BoardHelpers = new Mongo.Collection("boardhelpers");
 Administrators = new Mongo.Collection("admins");
 PendingTrades = new Mongo.Collection("trades");
+SnakeOrder = new Mongo.Collection("snakeorder");
 
  Meteor.startup(function() {
     var setServerTime = function() {
@@ -63,6 +64,7 @@ PendingTrades = new Mongo.Collection("trades");
     Meteor.subscribe("boardhelpers");
     Meteor.subscribe("admins");
     Meteor.subscribe("trades");
+    Meteor.subscribe("snakeorder");
   });
 
 Accounts.ui.config({
