@@ -3,6 +3,7 @@ import psycopg2
 
 captains = []
 commissioners = []
+players = []
 
 try:
 	conn = psycopg2.connect("dbname='eltp' user='eltp' host='localhost' password='eltp5ftw'")
