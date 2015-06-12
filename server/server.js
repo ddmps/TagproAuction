@@ -20,10 +20,6 @@ Administrators = new Mongo.Collection("admins");
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
 PendingTrades = new Mongo.Collection("trades");
 SnakeOrder = new Mongo.Collection("snakeorder");
-var nconf = require('nconf');
-nconf.file('/eltp.eu/config.json');
-var pg = Npm.require('pg');
-var conString = "postgres://"+nconf.get("database:username")+":"+nconf.get("database:password")+"@"+nconf.get("database:host")+"/"+nconf.get("database:database");
 
 Meteor.methods({
     isKeeper: function(bidder, player) {
@@ -463,7 +459,7 @@ Meteor.startup(function () {
     Accounts.validateLoginAttempt(function(type, allowed, error, user, connection, methodName, methodArguments) {
         console.log("Validating login attempt.. By:"+JSON.stringify(user));
         if (allowed && type === 'google' && user && user.services.google.profile.id) {
-            pg.connect(conString, function(err, client, done) {
+            pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
                 var handleError = function(err) {
                     if (!err) return false;
                     console.log("Could not validate login attempty by:"+JSON.stringify(user));
