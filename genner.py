@@ -47,7 +47,7 @@ for entry in players:
 	parsedPlayers.append({"tagpro": entry[0]})
 
 admins = []
-for entry in captains:
+for entry in commissioners:
 	admins.append({"username": entry[0], "google_id": entry[1]})
 
 with open("./private/nominations.json", "wb") as f:
@@ -61,6 +61,6 @@ with open("./private/teams.json", "wb") as f:
 with open("./private/keepers.json", "wb") as f:
 	f.write(json.dumps(keepers))
 with open("./private/player_response.json", "wb") as f:
-	f.write(json.dumps(players));
+	f.write(json.dumps(parsedPlayers));
 with open("./private/admins.json", "wb") as f:
 	f.write(json.dumps(admins));
