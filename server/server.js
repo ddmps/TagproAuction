@@ -466,7 +466,7 @@ Meteor.startup(function () {
             pg.connect(conString, function(err, client, done) {
                 var handleError = function(err) {
                     if (!err) return false;
-                    console.log("Could not validate login attempty by:"+JSON.stringify(user)):
+                    console.log("Could not validate login attempty by:"+JSON.stringify(user));
                     done(err);
                     return true;
                 };
