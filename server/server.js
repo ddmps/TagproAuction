@@ -20,6 +20,7 @@ Administrators = new Mongo.Collection("admins");
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
 PendingTrades = new Mongo.Collection("trades");
 SnakeOrder = new Mongo.Collection("snakeorder");
+var pg = Npm.require("pg");
 
 Meteor.methods({
     isKeeper: function(bidder, player) {
