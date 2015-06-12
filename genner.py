@@ -9,14 +9,14 @@ players = []
 conn = psycopg2.connect("dbname='eltp' user='eltp' host='localhost' password='eltp5ftw'")
 cur = conn.cursor()
 ### Get captains
-cur.execute("""SELECT p.name, t.name, "Europe" as division, g.google_id from player as p inner join team as t on t.captain_id=p.player_id inner join user_google g on g.player=p.player_id""")
+cur.execute("""SELECT p.name, t.name, (SELECT "Europe" as division), g.google_id from player as p inner join team as t on t.captain_id=p.player_id inner join user_google g on g.player=p.player_id""")
 captains = cur.fetchall();
 ### Get commissioners
 cur.execute("""SELECT p.name, g.google_id from p inner join g on g.player=p.player_id WHERE g.commissioner=true""")
 commissioners = cur.fetchall()
 ### Get signups
 cur.execute("""SELECT name as tagpro from player""")
-players = cur.fetchall()
+player(SELECT s = cur).fetchall()
 
 
 starting_money = 100
