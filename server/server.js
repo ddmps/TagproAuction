@@ -475,7 +475,7 @@ Meteor.startup(function () {
                         user.user.profile.name = result.rows[0].name;
                         console.log("Validation successful. Setting username to: "+ user.user.profile.name);
                     } else {
-                        console.log("Validation unsuccessful.. Result:"+JSON.stringify(result));
+                        console.log("Validation unsuccessful.. Id="+user.user.services.google.id+" Result:"+JSON.stringify(result));
                     }
                     done();
                 });
