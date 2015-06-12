@@ -2,8 +2,10 @@ var nconf = Npm.require('nconf');
 nconf.file('/eltp.eu/config.json');
 var conString = "postgres://"+nconf.get("database:username")+":"+nconf.get("database:password")+"@"+nconf.get("database:host")+"/"+nconf.get("database:database");
 WarningMessage = new Mongo.Collection("warningmessage");
+AuctionState = new Mongo.Collection("auctionstate");
 AuctionData = new Mongo.Collection("auctiondata");
 PausedAuction = new Mongo.Collection("pauseddata");
+players = new SQL.Collection('player', conString);
 teams = new SQL.Collection('team', conString);
 playerTeam = new SQL.Collection('team_player_xref', conString);
 //Divisions = new Mongo.Collection('divisions');
@@ -23,6 +25,8 @@ Administrators = new SQL.Collection("user_google", conString);
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
 //PendingTrades = new Mongo.Collection("trades");
 SnakeOrder = new Mongo.Collection("snakeorder");
+
+var startMoney = 100;
 
 Meteor.methods({
     undoNomination : function(person) {
@@ -140,10 +144,10 @@ Meteor.methods({
         var captain = Nominators.findOne({"order":nextOrder});
         var newnextorder = (nextOrder+1) % (Nominators.find({}).count()-1);
         console.log("pickNominator: nextOrder: " + nextInOrder.nextorder);
-        console.log("pickNominator: captain: " + captain.name + " rosterfull? " + captain.rosterfull);
+        //console.log("pickNominator: captain: " + captain.name + " rosterfull? " + captain.rosterfull);
         console.log("pickNominator: newnextorder: " + newnextorder);
         Nominators.update({"name":"nextInOrder"}, {$set: {"nextorder": newnextorder}});
-        // loop through nominators in order until we find one without a full roster
+        // loop through nominators in order until we find one with > 0 money
         if(captain.rosterfull) {
             return Meteor.call('pickNominator');
         }
@@ -187,7 +191,8 @@ Meteor.methods({
         if(parseInt(state.currentBid) < parseInt(amount)) {
 
             // K cool, does the player have this much money?
-            team = TeamNames.findOne({captain:bidder});
+            team = teams.select("*").join('team_player_xref').join;
+            team = players.select()
             var availablebidamt = parseInt(team.money);
             if(Meteor.call("isKeeper", bidder, state.currentPlayer)) {
 
