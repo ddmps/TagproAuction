@@ -12,7 +12,7 @@ cur = conn.cursor()
 cur.execute("""SELECT p.name, t.name, 'Europe', g.google_id from player as p inner join team as t on t.captain_id=p.player_id inner join user_google g on g.player=p.player_id""")
 captains = cur.fetchall();
 ### Get commissioners
-cur.execute("""SELECT p.name, g.google_id from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
+cur.execute("""SELECT p.name as username, g.google_id from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
 commissioners = cur.fetchall()
 ### Get signups
 cur.execute("""SELECT name as tagpro from player""")
@@ -53,3 +53,5 @@ with open("./private/keepers.json", "wb") as f:
 	f.write(json.dumps(keepers))
 with open("./private/player_response.json", "wb") as f:
 	f.write(json.dumps(players));
+with open("./private/admins.json", "wb") as f:
+	f.write(json.dumps(commissioners));
