@@ -44,11 +44,11 @@ for index, division in enumerate(division_names):
 
 parsedPlayers = [];
 for entry in players:
-	parsedPlayers.append("tagpro":entry[0])
+	parsedPlayers.append("tagpro": entry[0])
 
 admins = []
 for entry in captains:
-	admins.append({"username":entry[0], "google_id":entry[1]})
+	admins.append({"username": entry[0], "google_id": entry[1]})
 
 with open("./private/nominations.json", "wb") as f:
 	f.write(json.dumps(nominations))
