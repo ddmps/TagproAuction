@@ -467,12 +467,12 @@ Meteor.startup(function () {
                     return true;
                 };
                 if (handleError(err)) return;
-                client.query("SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.user.profile.services.google.id], function (err, result) {
+                client.query("SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.user.services.google.id], function (err, result) {
                     if (handleError(err)) return;
                     if (result.rows.length === 1) {
                         user.user.username = result.rows[0].name;
-                        user.user.name = result.rows[0].name;
-                        console.log("Validation successful. Setting username to: "+ user.username);
+                        user.user.profile.name = result.rows[0].name;
+                        console.log("Validation successful. Setting username to: "+ user.user.profile.name);
                     } else {
                         console.log("Validation unsuccessful.. Result:"+JSON.stringify(result));
                     }
