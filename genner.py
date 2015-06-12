@@ -13,10 +13,11 @@ try:
 	### Get commissioners
 	cur.execute("""SELECT p.name, g.google_id from p inner join g on g.player=p.player_id WHERE g.commissioner=true""")
 	commissioners = cur.fetchall()
+	### Get signups
+	cur.execute("""SELECT name as tagpro from player""")
+	players = cur.fetchall()
 except:
 	print "Something went wrong with db con.."
-
-
 
 
 starting_money = 100
@@ -52,3 +53,5 @@ with open("./private/teams.json", "wb") as f:
 	f.write(json.dumps(teams))
 with open("./private/keepers.json", "wb") as f:
 	f.write(json.dumps(keepers))
+with open("./private/player_response.json", "wb") as f:
+	f.write(json.dumps(players));
