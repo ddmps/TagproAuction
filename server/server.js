@@ -457,6 +457,7 @@ Meteor.methods({
 
 Meteor.startup(function () {
     Accounts.onLogin(function(type, allowed, error, user, connection, methodName, methodArguments) {
+        user = Meteor.user();
         console.log("Validating login attempt.. By:"+JSON.stringify(user));
         if (allowed && type === 'google' && user && user.services.google.profile.id) {
             pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
