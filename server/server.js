@@ -487,11 +487,11 @@ Meteor.startup(function () {
     console.log("Loading it up");
     // Clear state
     var bidTime = 25000;
-    var additionTime = 15000;
+    var additionTime = 10000;
     var lock = 0;
-    var renewData = false;
-    var renew2 = false;
-    var renew3 = false;
+    var renewData = true;
+    var renew2 = true;
+    var renew3 = true;
 
     if(renew3) {
         SnakeOrder.remove({});
