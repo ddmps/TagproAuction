@@ -20,7 +20,7 @@ players = cur.fetchall()
 
 
 starting_money = 100
-team_size = 
+team_size = 30
 
 kepers = False
 nominations = [{"name" : "nextInOrder", "nextorder" : 0}]
