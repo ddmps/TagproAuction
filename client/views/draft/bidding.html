@@ -23,95 +23,95 @@
                 </div>
             </div>
         {{/if}}
-    {{/if}}
-</template>
-                    <!-- commenting out to make this easier.
-                    {{else}}
-                        {{#if isNominationTime}}
-                            {{#if isTurnToNominate}}
-                                <form class="form-group nominate-player" role="form">
-                                    <div id="playerSearch" class="" style="display:inline">
-                                        <input type="text" name="player" class="typeahead form-control"  autocomplete="off" placeholder="Input a player name" />
-                                    </div>
-                                    <input type="text" name="amount" id="initialBid" class="form-control" placeholder="Initial bid (blank = 0)" style="width:auto; display:inline;" />
+        {{else}}
+            {{#if isNominationTime}}
+                {{#if isTurnToNominate}}
+                    <form class="form-group nominate-player" role="form">
+                        <div id="playerSearch" class="" style="display:inline">
+                            <input type="text" name="player" class="typeahead form-control"  autocomplete="off" placeholder="Input a player name" />
+                        </div>
+                        <input type="text" name="amount" id="initialBid" class="form-control" placeholder="Initial bid (blank = 0)" style="width:auto; display:inline;" />
 
-                                    <button type="submit" class="btn btn-success">Nominate</button>
-                                </form>
+                        <button type="submit" class="btn btn-success">Nominate</button>
+                    </form>
+                    <script>
+                        function initTypeAhead(players) {
+                            a = players.collection.find({drafted:false}).fetch();
+                            names = a.map(function(b) { return b.tagpro })
+                            $('#playerSearch .typeahead').typeahead({
+                                                                        hint: true,
+                                                                        highlight:true,
+                                                                        minLength: 1
+                                                                    },
+                                                                    {
+                                                                        name: 'players',
+                                                                        displayKey: 'value',
+                                                                        source: substringMatcher(names)
+                                                                    });
+                            $(".tt-dropdown-menu").css("width", $(".typeahead").css("width"));
+                            $(".tt-dropdown-menu").css(
+                                {"max-height": "150px", "overflow-y":"auto", "background-color":"white", "padding-left":"5px"});
+                            $("#initialBid").css("width", "none");
+                        }
+
+                        initTypeAhead(players);
+                    </script>
+                {{else}}
+                    <form class="bid-on-player" role="form">
+                        <div class="input-group">
+                            <input type="text" disabled name="amount" class="form-control" placeholder="Waiting for nomination">
+                            <span class="input-group-btn">
+                                <button type="submit" disabled class="btn btn-success">Bid</button>
+                            </span>
+                        </div>
+                    </form>
+                {{/if}}
+            {{else}}
+                {{#if sufficientFunds}}
+                    <form class="bid-on-player">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="amount"  onclick="$(this).val('')" placeholder="Input a bid amount (blank increases current bid by 1)">
+                            <span class="input-group-btn">
+                                {{#if canBid}}
+                                <button type="submit" class="btn btn-success">Bid</button>
+                                {{else}}
+                                <button type="submit" disabled class="btn btn-success">Bid</button>
+                                {{/if}}
+                            </span>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                        <div class="btn-group" style="padding-top:5px;">
+                            {{#if canBid}}
+                                {{#each bids}}
+                                    <button type="btn" class="btn btn-primary bid-button buttontime" amount="{{bid}}">{{bid}}</button>
+                                {{/each}}
                                 <script>
-                                    function initTypeAhead(players) {
-                                        a = players.collection.find({drafted:false}).fetch();
-                                        names = a.map(function(b) { return b.tagpro })
-                                        $('#playerSearch .typeahead').typeahead({
-                                                                                    hint: true,
-                                                                                    highlight:true,
-                                                                                    minLength: 1
-                                                                                },
-                                                                                {
-                                                                                    name: 'players',
-                                                                                    displayKey: 'value',
-                                                                                    source: substringMatcher(names)
-                                                                                });
-                                        $(".tt-dropdown-menu").css("width", $(".typeahead").css("width"));
-                                        $(".tt-dropdown-menu").css(
-                                            {"max-height": "150px", "overflow-y":"auto", "background-color":"white", "padding-left":"5px"});
-                                        $("#initialBid").css("width", "none");
-                                    }
-
-                                    initTypeAhead(players);
+                                    checkForButtons();
                                 </script>
                             {{else}}
-                                <form class="bid-on-player" role="form">
-                                    <div class="input-group">
-                                        <input type="text" disabled name="amount" class="form-control" placeholder="Waiting for nomination">
-                                        <span class="input-group-btn">
-                                            <button type="submit" disabled class="btn btn-success">Bid</button>
-                                        </span>
-                                    </div>
-                                </form>
+                                {{#each bids}}
+                                    <button type="btn" class="btn btn-primary bid-button" disabled amount="{{bid}}">{{bid}}</button>
+                                {{/each}}
                             {{/if}}
-                        {{else}}
-                            {{#if sufficientFunds}}
-                                <form class="bid-on-player">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" name="amount"  onclick="$(this).val('')" placeholder="Input a bid amount (blank increases current bid by 1)">
-                                        <span class="input-group-btn">
-                                            {{#if canBid}}
-                                            <button type="submit" class="btn btn-success">Bid</button>
-                                            {{else}}
-                                            <button type="submit" disabled class="btn btn-success">Bid</button>
-                                            {{/if}}
-                                        </span>
-                                    </div>
-                                </form>
-                                <div class="text-center">
-                                    <div class="btn-group" style="padding-top:5px;">
-                                        {{#if canBid}}
-                                            {{#each bids}}
-                                                <button type="btn" class="btn btn-primary bid-button buttontime" amount="{{bid}}">{{bid}}</button>
-                                            {{/each}}
-                                            <script>
-                                                checkForButtons();
-                                            </script>
-                                        {{else}}
-                                            {{#each bids}}
-                                                <button type="btn" class="btn btn-primary bid-button" disabled amount="{{bid}}">{{bid}}</button>
-                                            {{/each}}
-                                        {{/if}}
-                                    </div>
-                                </div>
-                            {{else}}
-                                <form class="bid-on-player" role="form">
-                                    <div class="input-group">
-                                        <input type="text" disabled name="amount" class="form-control" placeholder="Insufficient Funds or Auction Paused">
-                                        <span class="input-group-btn">
-                                            <button type="submit" disabled class="btn btn-danger">Bid</button>
-                                        </span>
-                                    </div>
-                                </form>
-                                <div class="text-center" style="padding-top:5px;">
-                                    {{#each bids}}
-                                        <button type="btn" class="btn btn-danger bid-button" disabled amount="{{bid}}">{{bid}}</button>
-                                    {{/each}}
-                                </div>
-                            {{/if}}
-                        {{/if}} -->
+                        </div>
+                    </div>
+                {{else}}
+                    <form class="bid-on-player" role="form">
+                        <div class="input-group">
+                            <input type="text" disabled name="amount" class="form-control" placeholder="Insufficient Funds or Auction Paused">
+                            <span class="input-group-btn">
+                                <button type="submit" disabled class="btn btn-danger">Bid</button>
+                            </span>
+                        </div>
+                    </form>
+                    <div class="text-center" style="padding-top:5px;">
+                        {{#each bids}}
+                            <button type="btn" class="btn btn-danger bid-button" disabled amount="{{bid}}">{{bid}}</button>
+                        {{/each}}
+                    </div>
+                {{/if}}
+            {{/if}}
+
+    {{/if}}
+</template>
