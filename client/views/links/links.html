@@ -5,19 +5,9 @@
     }
     </style>
     {{#if notSignedIn}}
-        <center>Create an account to sign up for MLTP Season 8!</center>
-    {{else}}
-        {{#if notSignedUp}}
-            <center><div id="signupforleague"><button type="button" class="btn btn-success">Click here to sign up for MLTP Season 8!</button></div></center>
-        {{else}}
-            <center><div id="editsignup"><button type="button" class="btn btn-success">You're signed up! Click here to edit your signup!</button></div></center>
-            <!-- button to edit signup -->
-        {{/if}}
-        <!-- button for draft -->
-        <!-- button for draft packet -->
-        <br><center><div id="viewSignups"><button type="button" class="btn btn-info">View a table of the signups.</button></div></center>
+        <center>Sign in with your google account!</center>
         {{#if canViewDraft}}
-            <br><center><div id="viewDraft"><button type="button" class="btn btn-info">MLTP Season 8 Draft!</button></div></center>
+            <br><center><div id="viewDraft"><button type="button" class="btn btn-info">ELTP Season 5 Draft!</button></div></center>
         {{/if}}<!-- button for rosters -->
         {{#if isCaptain}}
             <br><center><div id="viewTrade"><button type="button" class="btn btn-info">Trade!</button></div></center>

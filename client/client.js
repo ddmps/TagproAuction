@@ -68,5 +68,7 @@ SnakeOrder = new Mongo.Collection("snakeorder");
   });
 
 Accounts.ui.config({
-  passwordSignupFields: "USERNAME_ONLY"
+  requestPermissions: {
+    google: ['openId']
+  }
 });

@@ -41,7 +41,7 @@ Meteor.methods({
         }
     },
     resumeAuction : function (person) {
-        var additionTime = 15000;
+        var additionTime = 10000;
         if(AuctionData.findOne({State:"Nominating"}) !== undefined) {
             return false;
         }
@@ -456,6 +456,11 @@ Meteor.methods({
 });
 
 Meteor.startup(function () {
+    Accounts.validateLoginAttempt(function(type, allowed, error, user, connection, methodName, methodArguments) {
+        if (allowed && type === 'google' && user) {
+            //Validate login with pg!?? Add username to user object (user.username)
+        }
+    });
     console.log("Loading it up");
     // Clear state
     var bidTime = 25000;
