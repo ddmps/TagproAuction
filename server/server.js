@@ -470,7 +470,7 @@ Meteor.startup(function () {
                     done(err);
                     return true;
                 };
-                if handleError(err) return;
+                if (handleError(err)) return;
                 client.query("""SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1""", [user.services.google.profile.id], function (err, result) {
                     if (handleError(err)) return;
                     if (result.rows.length === 1) {
