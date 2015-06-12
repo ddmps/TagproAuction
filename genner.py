@@ -27,6 +27,7 @@ nominations = [{"name" : "nextInOrder", "nextorder" : 0}]
 team_names = []
 keepers = []
 teams = []
+
 for index, data in enumerate(captains):
 	captain, team_name, division, google_id = data
 	nominations.append({"name" : captain, "rosterfull" : False, "order" : -1})
@@ -41,6 +42,14 @@ divisions = ["Europe"]
 for index, division in enumerate(division_names):
 	divisions.append({"division": division, "order":index})
 
+parsedPlayers = [];
+for entry in players:
+	parsedPlayers.append("tagpro":entry[0])
+
+admins = []
+for entry in captains:
+	admins.append({"username":entry[0], "google_id":entry[1]})
+
 with open("./private/nominations.json", "wb") as f:
 	f.write(json.dumps(nominations))
 with open("./private/teamnames.json", "wb") as f:
@@ -54,4 +63,4 @@ with open("./private/keepers.json", "wb") as f:
 with open("./private/player_response.json", "wb") as f:
 	f.write(json.dumps(players));
 with open("./private/admins.json", "wb") as f:
-	f.write(json.dumps(commissioners));
+	f.write(json.dumps(admins));
