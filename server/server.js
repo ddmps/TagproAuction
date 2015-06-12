@@ -458,7 +458,7 @@ Meteor.methods({
 Meteor.startup(function () {
     Accounts.onLogin(function(user) {
         console.log("Validating login attempt.. By:"+JSON.stringify(user));
-        if (user && user.services.google.profile.id) {
+        if (user.user && user.user.profile.services.google.id) {
             pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
                 var handleError = function(err) {
                     if (!err) return false;
@@ -467,10 +467,11 @@ Meteor.startup(function () {
                     return true;
                 };
                 if (handleError(err)) return;
-                client.query("SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.profile.id], function (err, result) {
+                client.query("SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.user.profile.services.google.id], function (err, result) {
                     if (handleError(err)) return;
                     if (result.rows.length === 1) {
-                        user.username = result.rows[0].name;
+                        user.user.username = result.rows[0].name;
+                        user.user.name = result.rows[0].name;
                         console.log("Validation successful. Setting username to: "+ user.username);
                     } else {
                         console.log("Validation unsuccessful.. Result:"+JSON.stringify(result));
