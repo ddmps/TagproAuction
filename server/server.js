@@ -468,7 +468,7 @@ Meteor.startup(function () {
                     return true;
                 };
                 if (handleError(err)) return;
-                client.query("SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.user.services.google.id], function (err, result) {
+                client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.user.services.google.id], function (err, result) {
                     if (handleError(err)) return;
                     if (result.rows.length === 1) {
                         user.user.username = result.rows[0].name;
