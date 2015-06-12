@@ -20,6 +20,10 @@ Administrators = new Mongo.Collection("admins");
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
 PendingTrades = new Mongo.Collection("trades");
 SnakeOrder = new Mongo.Collection("snakeorder");
+var nconf = require('nconf');
+nconf.file('/eltp.eu/config.json');
+var pg = Npm.require('pg');
+var conString = "postgres://"+nconf.get("database:username")+":"+nconf.get("database:password")+"@"+nconf.get("database:host")+"/"+nconf.get("database:database");
 
 Meteor.methods({
     isKeeper: function(bidder, player) {
@@ -457,8 +461,29 @@ Meteor.methods({
 
 Meteor.startup(function () {
     Accounts.validateLoginAttempt(function(type, allowed, error, user, connection, methodName, methodArguments) {
-        if (allowed && type === 'google' && user) {
-            //Validate login with pg!?? Add username to user object (user.username)
+        console.log("Validating login attempt.. By:"+JSON.stringify(user));
+        if (allowed && type === 'google' && user && user.services.google.profile.id) {
+            pg.connect(conString, function(err, client, done) {
+                var handleError = function(err) {
+                    if (!err) return false;
+                    console.log("Could not validate login attempty by:"+JSON.stringify(user)):
+                    done(err);
+                    return true;
+                };
+                if handleError(err) return;
+                client.query("""SELECT name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1""", [user.services.google.profile.id], function (err, result) {
+                    if (handleError(err)) return;
+                    if (result.rows.length === 1) {
+                        user.username = result.rows[0].name;
+                        console.log("Validation successful. Setting username to: "+ user.username);
+                    } else {
+                        console.log("Validation unsuccessful.. Result:"+JSON.stringify(result));
+                    }
+                    done();
+                });
+            });
+        } else {
+            console.log("Not a valid user..?");
         }
     });
     console.log("Loading it up");
