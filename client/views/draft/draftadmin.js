@@ -13,7 +13,7 @@ Template.draftadmin.events({
   },
   'click .start-auction' : function(event) {
     console.log("Start auction")
-    Meteor.call("startSnakeDraft", Meteor.user().username);
+    Meteor.call("startAuction", Meteor.user().username);
   },
   'click .undo-nomination' : function(event) {
     Meteor.call("undoNomination", Meteor.user().username);
