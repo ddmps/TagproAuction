@@ -586,7 +586,7 @@ Meteor.startup(function () {
 
         players=JSON.parse(Assets.getText('player_response.json'));
         for(i = 0; i < players.length; i++) {
-            var obj = keepers[i];
+            var obj = players[i];
             PlayerResponse.insert(obj);
         }
 
