@@ -16,6 +16,7 @@ Template.links.helpers({
       return Administrators.find({"username":Meteor.user().username}).count()>0
   },
   canViewDraft:function() {
+    console.log("Can view draft? Meteor user: "+Meteor.user());
     username = Meteor.user().username;
     if(Nominators.find({"name":username}).count() > 0)
         return true;
