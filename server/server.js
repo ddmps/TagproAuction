@@ -21,6 +21,7 @@ LastWonPlayer = new Mongo.Collection("lastwonplayer");
 PendingTrades = new Mongo.Collection("trades");
 SnakeOrder = new Mongo.Collection("snakeorder");
 var pg = Npm.require("pg");
+var Fiber = Npm.require('fibers');
 
 Meteor.methods({
     isKeeper: function(bidder, player) {
@@ -456,37 +457,34 @@ Meteor.methods({
     }
 });
 
-function getUsername(google_id, callback) {
-    pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
-        var handleError = function(err) {
-            if (!err) return false;
-            console.log("Could not validate login attempty by:"+JSON.stringify(google_id));
-            done(err);
-            return true;
-        };
-        if (handleError(err)) return;
-        client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [google_id], function (err, result) {
-            var username = null;
-            if (handleError(err)) return;
-            if (result.rows.length === 1) {
-                username = result.rows[0].name;
-                console.log("Validation successful. Setting username to: "+ username);
-            } else {
-                console.log("Validation unsuccessful.. Id="+google_id+" Result:"+JSON.stringify(result));
-            }
-            done();
-            callback(username);
-        });
-    });        
-}
-
-var wrappedGetUsername = Meteor._wrapAsync(getUsername);
-
 Meteor.startup(function () {
     Accounts.onCreateUser(function(options, user) {
         console.log("Created user.. User:"+JSON.stringify(user)+" Options:"+JSON.stringify(options));
         if (user && user.services.google.id) {
-            user.username = wrappedGetUsername(user.services.google.id)
+            var fiber = Fiber.current;
+            pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
+                var handleError = function(err) {
+                    if (!err) return false;
+                    console.log("Could not validate login attempty by:"+JSON.stringify(google_id));
+                    done(err);
+                    return true;
+                };
+                if (handleError(err)) return;
+                client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.id], function (err, result) {
+                    var username = null;
+                    if (handleError(err)) return;
+                    if (result.rows.length === 1) {
+                        fiber.run(result.rows[0].name);
+                        username = result.rows[0].name;
+                        console.log("Validation successful. Setting username to: "+ username);
+                    } else {
+                        console.log("Validation unsuccessful.. Id="+google_id+" Result:"+JSON.stringify(result));
+                    }
+                    done();
+                });
+            });        
+            console.log('Yielding..'):
+            user.username = Fiber.yield();
         } else {
             console.log("Not a valid user..?");
         }
