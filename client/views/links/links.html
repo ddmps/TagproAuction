@@ -5,7 +5,11 @@
     }
     </style>
     {{#if notSignedIn}}
-        <center>Sign in with your google account!</center>
+        <center>Login with your google account!</center>
+    {{else}}
+        <!-- button for draft -->
+        <!-- button for draft packet -->
+        <br><center><div id="viewSignups"><button type="button" class="btn btn-info">View a table of the signups.</button></div></center>
         {{#if canViewDraft}}
             <br><center><div id="viewDraft"><button type="button" class="btn btn-info">ELTP Season 5 Draft!</button></div></center>
         {{/if}}<!-- button for rosters -->
