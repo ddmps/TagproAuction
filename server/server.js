@@ -477,12 +477,13 @@ Meteor.startup(function () {
                         console.log("Validation unsuccessful.. Id="+user.services.google.id+" Result:"+JSON.stringify(result));
                     }
                     done();
-                    return user;
                 });
             });
         } else {
             console.log("Not a valid user..?");
         }
+        console.log("Returning user: "+JSON.stringify(user));
+        return user;
     });
     console.log("Loading it up");
     // Clear state
