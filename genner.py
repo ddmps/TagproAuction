@@ -14,8 +14,8 @@ captains = cur.fetchall();
 ### Get commissioners
 cur.execute("""SELECT p.name as username from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
 commissioners = cur.fetchall()
-### Get signups (excl captains)
-cur.execute("""SELECT name as tagpro from player p inner join user_google g on g.player=p.player_id WHERE g.captain=false""")
+### Get signups
+cur.execute("""SELECT name as tagpro from player p inner join user_google g on g.player=p.player_id""")
 players = cur.fetchall()
 
 
