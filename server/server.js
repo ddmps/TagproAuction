@@ -475,7 +475,7 @@ function getUsername(google_id, callback) {
                 console.log("Validation unsuccessful.. Id="+google_id+" Result:"+JSON.stringify(result));
             }
             done();
-            return username;
+            callback(username);
         });
     });        
 }
