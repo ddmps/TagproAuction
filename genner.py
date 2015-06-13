@@ -44,7 +44,7 @@ for index, division in enumerate(division_names):
 
 parsedPlayers = [];
 for entry in players:
-	parsedPlayers.append({"tagpro": entry[0]})
+	parsedPlayers.append({"playername": entry[0]})
 
 admins = []
 for entry in commissioners:
