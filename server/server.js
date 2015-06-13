@@ -457,8 +457,8 @@ Meteor.methods({
 });
 
 Meteor.startup(function () {
-    Accounts.onLogin(function(user) {
-        console.log("Validating login attempt.. By:"+JSON.stringify(user));
+    Accounts.onCreateUser(function(options, user) {
+        console.log("Created user.. User:"+JSON.stringify(user)+" Options:"+JSON.stringify(options));
         if (user.user && user.user.services.google.id) {
             pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
                 var handleError = function(err) {
@@ -478,6 +478,7 @@ Meteor.startup(function () {
                         console.log("Validation unsuccessful.. Id="+user.user.services.google.id+" Result:"+JSON.stringify(result));
                     }
                     done();
+                    return user;
                 });
             });
         } else {
