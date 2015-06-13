@@ -150,11 +150,17 @@ Meteor.methods({
         console.log("pickNominator: captain: " + captain.name + " rosterfull? " + captain.rosterfull);
         console.log("pickNominator: newnextorder: " + newnextorder);
         Nominators.update({"name":"nextInOrder"}, {$set: {"nextorder": newnextorder}});
-        // loop through nominators in order until we find one without a full roster
+        // loop through nominators in order until we find one without a full roster or > moneys than 0
         if(captain.rosterfull) {
             return Meteor.call('pickNominator');
         }
-
+        // Check if has enough moneys
+        var team = TeamNames.findOne({captain:captain});
+        var availablebidamt = parseInt(team.money);
+        if (availablebidamt<1) {
+            console.log("pickNominator: no more moneys.. Next!");
+            return Meteor.call('pickNominator');
+        }
         nextNominator = Nominators.findOne({"order":newnextorder});
         var numplayers = TeamData.find({name:{$ne:""}}).count() - 19;
         var text = "Waiting for "+captain.name +" to nominate pick "+numplayers+" of the draft.";
@@ -269,6 +275,10 @@ Meteor.methods({
     toggleState: function(playerNominated, bid) {
         var bidTime = 25000;
         var bidTimeout = 0;
+        if (parseInt(bid)===0) {
+            //Set min bid to 1.
+            bid = 1;
+        }
         console.log("Checking toggle state");
 
         var state = AuctionData.findOne();
