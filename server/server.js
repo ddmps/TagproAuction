@@ -43,7 +43,7 @@ Meteor.methods({
         }
     },
     resumeAuction : function (person) {
-        var additionTime = 10000;
+        var additionTime = 25000;
         if(AuctionData.findOne({State:"Nominating"}) !== undefined) {
             return false;
         }
