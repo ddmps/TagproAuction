@@ -472,7 +472,6 @@ Meteor.startup(function () {
                     if (handleError(err)) return;
                     if (result.rows.length === 1) {
                         user.username = result.rows[0].name;
-                        user.profile.name = result.rows[0].name;
                         Meteor.users.update({_id: user._id}, {$set: {username: user.username}})
                         console.log("Validation successful. Setting username to: "+ user.username);
                     } else {
