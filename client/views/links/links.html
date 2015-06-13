@@ -4,13 +4,8 @@
       margin-top: 70px;
     }
     </style>
-    {{#if loggingIn}}
-        <center>Logging in!</center>
-    {{/if}}
-    {{#else}}
-        {{#if notSignedIn}}
-            <center>Sign in with your google account!</center>
-        {{/if}}
+    {{#if notSignedIn}}
+        <center>Sign in with your google account!</center>
         {{#if canViewDraft}}
             <br><center><div id="viewDraft"><button type="button" class="btn btn-info">ELTP Season 5 Draft!</button></div></center>
         {{/if}}<!-- button for rosters -->
@@ -24,6 +19,6 @@
         <br><center><div id="viewTrade"><button type="button" class="btn btn-info">Trade!</button></div></center>
         <!-- button for administrative stuff -->
         {{/if}}
-    {{/else}}
+    {{/if}}
     <!-- squares for sign up, edit signup, draft, admin, trade, draft packet, manage rosters, waivers-->
 </template>
