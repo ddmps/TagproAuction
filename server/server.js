@@ -460,24 +460,26 @@ Meteor.startup(function () {
     Accounts.onCreateUser(function(options, user) {
         console.log("Created user.. User:"+JSON.stringify(user)+" Options:"+JSON.stringify(options));
         if (user && user.services.google.id) {
-            pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
-                var handleError = function(err) {
-                    if (!err) return false;
-                    console.log("Could not validate login attempty by:"+JSON.stringify(user));
-                    done(err);
-                    return true;
-                };
-                if (handleError(err)) return;
-                client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.id], function (err, result) {
+            Fiber(function() {
+                pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
+                    var handleError = function(err) {
+                        if (!err) return false;
+                        console.log("Could not validate login attempty by:"+JSON.stringify(user));
+                        done(err);
+                        return true;
+                    };
                     if (handleError(err)) return;
-                    if (result.rows.length === 1) {
-                        user.username = result.rows[0].name;
-                        Meteor.users.update({_id: user._id}, {$set: {username: user.username}})
-                        console.log("Validation successful. Setting username to: "+ user.username);
-                    } else {
-                        console.log("Validation unsuccessful.. Id="+user.services.google.id+" Result:"+JSON.stringify(result));
-                    }
-                    done();
+                    client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.id], function (err, result) {
+                        if (handleError(err)) return;
+                        if (result.rows.length === 1) {
+                            user.username = result.rows[0].name;
+                            Meteor.users.update({_id: user._id}, {$set: {username: user.username}})
+                            console.log("Validation successful. Setting username to: "+ user.username);
+                        } else {
+                            console.log("Validation unsuccessful.. Id="+user.services.google.id+" Result:"+JSON.stringify(result));
+                        }
+                        done();
+                    });
                 });
             });
         } else {
