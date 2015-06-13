@@ -483,7 +483,7 @@ Meteor.startup(function () {
                     done();
                 });
             });        
-            console.log('Yielding..'):
+            console.log('Yielding..');
             user.username = Fiber.yield();
         } else {
             console.log("Not a valid user..?");
