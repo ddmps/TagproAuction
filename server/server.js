@@ -155,7 +155,7 @@ Meteor.methods({
             return Meteor.call('pickNominator');
         }
         // Check if has enough moneys
-        var team = TeamNames.findOne({captain:captain});
+        var team = TeamNames.findOne({captain:captain.name});
         var availablebidamt = parseInt(team.money);
         if (availablebidamt<1) {
             console.log("pickNominator: no more moneys.. Next!");
