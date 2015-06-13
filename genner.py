@@ -9,10 +9,10 @@ players = []
 conn = psycopg2.connect("dbname='eltp' user='eltp' host='localhost' password='eltp5ftw'")
 cur = conn.cursor()
 ### Get captains
-cur.execute("""SELECT p.name, t.name, 'Europe', g.google_id from player as p inner join team as t on t.captain_id=p.player_id inner join user_google g on g.player=p.player_id""")
+cur.execute("""SELECT p.name, t.name, 'Europe' from player as p inner join team as t on t.captain_id=p.player_id inner join user_google g on g.player=p.player_id""")
 captains = cur.fetchall();
 ### Get commissioners
-cur.execute("""SELECT p.name as username, g.google_id from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
+cur.execute("""SELECT p.name as username from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
 commissioners = cur.fetchall()
 ### Get signups (excl captains)
 cur.execute("""SELECT name as tagpro from player p inner join user_google g on g.player=p.player_id WHERE g.captain=false""")
@@ -29,7 +29,7 @@ keepers = []
 teams = []
 
 for index, data in enumerate(captains):
-	captain, team_name, division, google_id = data
+	captain, team_name, division = data
 	nominations.append({"name" : captain, "rosterfull" : False, "order" : -1})
 	team_names.append({"teamname":team_name, "division" : division, "money" : starting_money, "keepermoney":0, "captain":captain, "numrosterspots":team_size, "count":1, "order":index})
 	teams.append({"name" : captain, "captain":True, "order" : 1, "cost" : 0, "division" : division, "teamname" : team_name })
@@ -48,7 +48,7 @@ for entry in players:
 
 admins = []
 for entry in commissioners:
-	admins.append({"username": entry[0], "google_id": entry[1]})
+	admins.append({"username": entry[0]})
 
 with open("./private/nominations.json", "wb") as f:
 	f.write(json.dumps(nominations))
