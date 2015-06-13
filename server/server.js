@@ -14,7 +14,7 @@ CurrentPick = new Mongo.Collection('currentpick');
 AuctionStatus = new Mongo.Collection("auctionstatus");
 AuctionLock = new Mongo.Collection("auctionlock");
 PreviousAuctionData = new Mongo.Collection("previousauctiondata");
-PlayerResponse = new Mongo.Collection("player_response");
+PlayerResponse = new Mongo.Collection("playerResponse");
 BoardHelpers = new Mongo.Collection("boardhelpers");
 Administrators = new Mongo.Collection("admins");
 LastWonPlayer = new Mongo.Collection("lastwonplayer");
@@ -582,6 +582,12 @@ Meteor.startup(function () {
         for(i = 0; i < keepers.length; i++) {
             var obj = keepers[i];
             Keepers.insert(obj);
+        }
+
+        players=JSON.parse(Assets.getText('player_response.json')):
+        for(i = 0; i < players.length; i++) {
+            var obj = keepers[i];
+            PlayerResponse.insert(obj);
         }
 
         PlayerResponse.update({}, {$set:{"drafted":false}}, {multi:true});
