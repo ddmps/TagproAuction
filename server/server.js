@@ -473,19 +473,19 @@ Meteor.startup(function () {
                     if (result.rows.length === 1) {
                         user.username = result.rows[0].name;
                         user.profile.name = result.rows[0].name;
+                        Meteor.users.update({_id: user._id}, {$set: {username: user.username}})
                         console.log("Validation successful. Setting username to: "+ user.username);
                     } else {
                         console.log("Validation unsuccessful.. Id="+user.services.google.id+" Result:"+JSON.stringify(result));
                     }
                     done();
-                    return user;
                 });
             });
         } else {
             console.log("Not a valid user..?");
-            return user;
         }
         console.log("Returning user: "+JSON.stringify(user));
+        return user;
     });
     console.log("Loading it up");
     // Clear state
