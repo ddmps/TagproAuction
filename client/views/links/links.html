@@ -4,8 +4,12 @@
       margin-top: 70px;
     }
     </style>
-    {{#if notSignedIn}}
-        <center>Sign in with your google account!</center>
+    {{#if loggingIn}}
+        <center>Logging in!</center>
+    {{#else}}
+        {{#if notSignedIn}}
+            <center>Sign in with your google account!</center>
+        {{/if}}
         {{#if canViewDraft}}
             <br><center><div id="viewDraft"><button type="button" class="btn btn-info">ELTP Season 5 Draft!</button></div></center>
         {{/if}}<!-- button for rosters -->
