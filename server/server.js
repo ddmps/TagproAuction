@@ -162,7 +162,7 @@ Meteor.methods({
             return Meteor.call('pickNominator');
         }
         nextNominator = Nominators.findOne({"order":newnextorder});
-        var numplayers = TeamData.find({name:{$ne:""}}).count() - 19;
+        var numplayers = TeamData.find({name:{$ne:""}}).count() - 9;
         var text = "Waiting for "+captain.name +" to nominate pick "+numplayers+" of the draft.";
         Meteor.call("insertMessage", text, new Date());
         var text = nextNominator.name +" is nominating after "+ captain.name;
