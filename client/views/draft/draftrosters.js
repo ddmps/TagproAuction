@@ -1,7 +1,6 @@
 Template.draftrosters.helpers({
     getDivisions : function() {
       var divisions = Divisions.find({},{sort:{order:-1}});
-      console.log("Getting divisions: " +JSON.stringify(divisions));
       return divisions;
   },
     inRedDivision : function(division) {
@@ -16,7 +15,9 @@ Template.draftrosters.helpers({
 
 Template.renderteam.helpers({
   teams : function(division) {
-    return TeamNames.find({"division" : division}, {fields:{teamname:1, keepermoney:1, money:1, division:1}, sort:{order:1}});
+    teamNames = TeamNames.find({"division" : division}, {fields:{teamname:1, keepermoney:1, money:1, division:1}, sort:{order:1}});
+    console.log("Amount of teams: "+teamNames.count()+" in division: "+division);
+    return teamNames;
   },
   teamID: function(teamname) {
     return teamname.split(" ").join("_");
@@ -33,6 +34,8 @@ Template.renderteam.helpers({
 
 Template.renderplayers.helpers({
   players : function(teamname) {
-    return TeamData.find({"teamname" : teamname}, {sort : {order : 1}});
+    playerData = TeamData.find({"teamname" : teamname}, {sort : {order : 1}});
+    console.log("Found "+playerData.count()+" players in team: "+teamname);
+    return ;
   }
 });
