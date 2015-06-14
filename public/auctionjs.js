@@ -49,7 +49,7 @@ $("#messageSubmit").submit(function() {
   }
 });
 
-playSounds = function(soundToPlay) {
+function playSounds(soundToPlay) {
   console.log(soundToPlay);
   if(soundToPlay !== 'undefined') {
     if($("#enableSounds").is(":checked")) {
@@ -62,7 +62,7 @@ var blueColor = "rgb(134, 198, 230)";
 var redColor = "rgb(235, 126, 126)";
 var firstLiCheck = 0;
 
-animateTeam = function(name) {
+function animateTeam(name) {
   var team = $("#team_"+name.split(" ").join("_"));
   var grandparent = team.parent().parent();
 
@@ -81,7 +81,7 @@ animateTeam = function(name) {
   }
 }
 
-checkForAnimation = function() {
+function checkForAnimation() {
   if($(".winningTeam").length == 1) {
     teamname = $(".winningTeam").html().split("|")[1].split("<span")[0].trim();
     animateTeam(teamname);
@@ -92,10 +92,10 @@ checkForAnimation = function() {
   }
 }
 
-showPlayerInfo = function() {
+function showPlayerInfo() {
   $("#playerModal").modal("show");
 }
-hidePlayerInfo = function() {
+function hidePlayerInfo() {
   $("#playerModal").modal("hide");
 }
 
@@ -128,7 +128,7 @@ setInterval(function() {
 }, 1000);
 
 var oldA;
-startTimer = function() {
+function startTimer() {
   if(oldA) { clearInterval(oldA)}
   a = setInterval(function() {
     time = parseInt($("#elapsedTime").html())
