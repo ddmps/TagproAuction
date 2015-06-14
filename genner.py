@@ -15,9 +15,8 @@ captains = cur.fetchall();
 cur.execute("""SELECT p.name as username from player p inner join user_google g on g.player=p.player_id WHERE g.commissioner=true""")
 commissioners = cur.fetchall()
 ### Get signups
-cur.execute("""SELECT name as tagpro from player p inner join user_google g on g.player=p.player_id""")
+cur.execute("""SELECT p.name as tagpro, p.reddit_name as reddit, p.tagpro_profile_link as link, country as location, p.position, 'Availability: ' || p.availability || '\r\nOther info: ' || p.info as note, p.mic, array_agg(pd.day) from player p inner join user_google g on g.player=p.player_id left join player_days pd on pd.player_id=p.player_id GROUP BY p.name, p.reddit_name, p.tagpro_profile_link, p.country, p.position, p.availability, p.info, p.mic""")
 players = cur.fetchall()
-
 
 starting_money = 100
 team_size = 10
