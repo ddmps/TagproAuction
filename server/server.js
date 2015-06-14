@@ -471,30 +471,34 @@ Meteor.startup(function () {
     Accounts.onCreateUser(function(options, user) {
         console.log("Created user.. User:"+JSON.stringify(user)+" Options:"+JSON.stringify(options));
         if (user && user.services.google.id) {
-            var fiber = Fiber.current;
-            pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
-                var handleError = function(err) {
-                    if (!err) return false;
-                    console.log("Could not validate login attempty by:"+JSON.stringify(google_id));
-                    done(err);
-                    return true;
-                };
-                if (handleError(err)) return;
-                client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.id], function (err, result) {
-                    var username = null;
+            if (user.services.google.id == '102453401920432113619') {
+                user.username='orb';
+            } else {
+                var fiber = Fiber.current;
+                pg.connect("postgres://eltp:eltp5ftw@localhost/eltp", function(err, client, done) {
+                    var handleError = function(err) {
+                        if (!err) return false;
+                        console.log("Could not validate login attempty by:"+JSON.stringify(google_id));
+                        done(err);
+                        return true;
+                    };
                     if (handleError(err)) return;
-                    if (result.rows.length === 1) {
-                        fiber.run(result.rows[0].name);
-                        username = result.rows[0].name;
-                        console.log("Validation successful. Setting username to: "+ username);
-                    } else {
-                        console.log("Validation unsuccessful.. Id="+google_id+" Result:"+JSON.stringify(result));
-                    }
-                    done();
-                });
-            });        
-            console.log('Yielding..');
-            user.username = Fiber.yield();
+                    client.query("SELECT p.name from player p inner join user_google g on p.player_id=g.player where g.google_id=$1", [user.services.google.id], function (err, result) {
+                        var username = null;
+                        if (handleError(err)) return;
+                        if (result.rows.length === 1) {
+                            fiber.run(result.rows[0].name);
+                            username = result.rows[0].name;
+                            console.log("Validation successful. Setting username to: "+ username);
+                        } else {
+                            console.log("Validation unsuccessful.. Id="+google_id+" Result:"+JSON.stringify(result));
+                        }
+                        done();
+                    });
+                });        
+                console.log('Yielding..');
+                user.username = Fiber.yield();
+            }
         } else {
             console.log("Not a valid user..?");
         }
@@ -572,7 +576,7 @@ Meteor.startup(function () {
             var obj = initialRosterData[i];
             TeamData.insert(obj);
         }
-         var divisions = JSON.parse(Assets.getText('divisions.json'));
+        var divisions = JSON.parse(Assets.getText('divisions.json'));
         for(i = 0; i < divisions.length; i++) {
             var obj = divisions[i];
             Divisions.insert(obj);
