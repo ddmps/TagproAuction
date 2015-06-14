@@ -13,7 +13,7 @@ Template.messages.helpers({
   },
   admin : function() {
     if(Meteor.user() !== undefined) {
-      if(admins.indexOf(Meteor.user().username) >= 0) {
+      if(Administrators.indexOf(Meteor.user().username) >= 0) {
         return true;
       }
     }
