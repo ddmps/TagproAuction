@@ -572,6 +572,11 @@ Meteor.startup(function () {
             var obj = initialRosterData[i];
             TeamData.insert(obj);
         }
+         var divisions = JSON.parse(Assets.getText('divisions.json'));
+        for(i = 0; i < divisions.length; i++) {
+            var obj = divisions[i];
+            Divisions.insert(obj);
+        }
     }
 
     if(renewData) {
