@@ -38,7 +38,7 @@ for index, data in enumerate(captains):
 	keepers.append({"captain" : captain, "keepers":[]})
 
 division_names = set(c[2] for c in captains)
-divisions = ["Europe"]
+divisions = []
 for index, division in enumerate(division_names):
 	divisions.append({"division": division, "order":index})
 
