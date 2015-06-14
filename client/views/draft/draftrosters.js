@@ -36,6 +36,6 @@ Template.renderplayers.helpers({
   players : function(teamname) {
     playerData = TeamData.find({"teamname" : teamname}, {sort : {order : 1}});
     console.log("Found "+playerData.count()+" players in team: "+teamname);
-    return ;
+    return playerData;
   }
 });
