@@ -12,11 +12,11 @@ Template.messages.helpers({
     return true;
   },
   admin : function() {
-    //if(Meteor.user() !== undefined) {
-      //if(admins.indexOf(Meteor.user().username) >= 0) {
-       // return true;
-      //}
-    //}
+    if(Meteor.user() !== undefined) {
+      if(Administrators.find({username: Meteor.user().username}).count() > 0) {
+        return true;
+      }
+    }
     return false;
   },
   messageColor: function(messageType) {
@@ -61,11 +61,11 @@ Template.getmessages.helpers({
       return Messages.find({}, {sort: {createdAt: -1}, limit:parseInt(limit)});
     },
     admin : function() {
-      //if(Meteor.user() !== undefined) {
-       // if(admins.indexOf(Meteor.user().username) >= 0) {
-        //  return true;
-        //}
-      //}
+      if(Meteor.user() !== undefined) {
+        if(Administrators.find({username: Meteor.user().username}).count() > 0) {
+          return true;
+        }
+      }
       return false;
     },
     messageColor: function(messageType) {

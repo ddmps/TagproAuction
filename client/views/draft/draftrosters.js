@@ -1,6 +1,8 @@
 Template.draftrosters.helpers({
     getDivisions : function() {
-      return Divisions.find({},{sort:{order:-1}});
+      var divisions = Divisions.find({},{sort:{order:-1}});
+      console.log("Getting divisions: " +JSON.stringify(divisions));
+      return divisions;
   },
     inRedDivision : function(division) {
       if(division == "Central" || division == "Pacific") {
