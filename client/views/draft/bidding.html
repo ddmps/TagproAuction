@@ -1,6 +1,6 @@
 <template name="display_bidding_options">
     {{#if isCaptain}}
-        {{#if isSnakeDraft}}
+        <!--{{#if isSnakeDraft}}
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1">
                     <div class="panel panel-default">
@@ -23,14 +23,14 @@
                 </div>
             </div>
         {{/if}}
-        {{else}}
+        {{else}}-->
             {{#if isNominationTime}}
                 {{#if isTurnToNominate}}
                     <form class="form-group nominate-player" role="form">
                         <div id="playerSearch" class="" style="display:inline">
                             <input type="text" name="player" class="typeahead form-control"  autocomplete="off" placeholder="Input a player name" />
                         </div>
-                        <input type="text" name="amount" id="initialBid" class="form-control" placeholder="Initial bid (blank = 0)" style="width:auto; display:inline;" />
+                        <input type="text" name="amount" id="initialBid" class="form-control" placeholder="Initial bid (blank = 1)" style="width:auto; display:inline;" />
 
                         <button type="submit" class="btn btn-success">Nominate</button>
                     </form>
