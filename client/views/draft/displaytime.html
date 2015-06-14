@@ -17,6 +17,7 @@
                             <script>
                                 startTimer();
                                 hidePlayerInfo();
+                                console.log("hiding info/startTimer");
                             </script>
                             {{else}}
                             <h2 class="panel-title" onclick="showPlayerInfo()">
@@ -28,6 +29,7 @@
                             {{> renderplayermodal currentPlayerInfo}}
 
                             <script>
+                                console.log("Playing sound go!");
                                 playSounds("go");
                             </script>
                         {{/if}}
